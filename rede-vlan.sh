@@ -107,8 +107,17 @@ interface vlan 40
 ! ==============================
 ip routing
 !
-
-! ==============================
+! ROTA PADRÃO PARA INTERNET
+! Caso o link de internet esteja conectado na interface VLAN40
+! ou na interface física conectada a essa VLAN
+! Onde 192.168.100.57 é o gateway do link de internet
+!
+configure terminal
+ip route 0.0.0.0 0.0.0.0 192.168.100.57
+end
+write memory
+! copy running-config startup-config
+! ==============================\
 ! CONFIGURAÇÃO DHCP
 ! ==============================
 ! Reservar alguns endereços (não serão distribuídos)
