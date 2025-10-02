@@ -1,18 +1,9 @@
 !
-! Configuração de VLANs e Roteamento Inter-VLAN no switch L3
-!
 ! ==============================
-! HABILITAR FEATURES
+! CONFIGURAÇÃO DE VLANs
 ! ==============================
 configure terminal
-feature telnet
-feature ssh
-feature interface-vlan
-feature dhcp
-!
-==============================
-! CRIAÇÃO DAS VLANs
-! ==============================
+
 vlan 10
  name SERVIDORES
 vlan 20
@@ -21,141 +12,92 @@ vlan 30
  name TIC
 vlan 40
  name CLUSTER
+exit
 !
 ! ==============================
 ! ATRIBUIR PORTAS ÀS VLANs
 ! ==============================
-interface range fa0/2 - 5
+interface range GigabitEthernet1/0/2-5
  switchport mode access
  switchport access vlan 10
  no shutdown
 !
-interface range fa0/6 - 10
- switchport mode access
- switchport access vlan 20
- no shutdown
-! 
-interface range fa0/11 - 15
- switchport mode access
- switchport access vlan 30
- no shutdown
-! 
-interface range fa0/16 - 20
- switchport mode access
- switchport access vlan 40
- no shutdown
-!XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-!
-!Outro Mdelo de Switch
-interface ethernet 2/2-6
- switchport
- switchport mode access
- switchport access vlan 10
- no shutdown
-!
-interface ethernet 2/7-11
- switchport
+interface range GigabitEthernet1/0/6-10
  switchport mode access
  switchport access vlan 20
  no shutdown
 !
-interface ethernet 2/12-15
- switchport
+interface range GigabitEthernet1/0/11-15
  switchport mode access
  switchport access vlan 30
  no shutdown
 !
-interface ethernet 2/16-20
- switchport
+interface range GigabitEthernet1/0/16-20
  switchport mode access
  switchport access vlan 40
  no shutdown
-!
-!
 !
 ! ==============================
 ! CONFIGURAR SVI (INTERFACES VLAN)
 ! ==============================
-interface ethernet 2/1
-switchport
-switchport mode access
-no shutdown
-!
-interface vlan 1
+interface Vlan1
  ip address 192.168.122.10 255.255.255.0
  no shutdown
 !
-interface vlan 10
+interface Vlan10
  ip address 10.11.10.1 255.255.255.0
  no shutdown
 !
-interface vlan 20
+interface Vlan20
  ip address 10.11.11.1 255.255.255.0
  no shutdown
 !
-interface vlan 30
+interface Vlan30
  ip address 10.11.12.1 255.255.255.0
  no shutdown
 !
-interface vlan 40
+interface Vlan40
  ip address 192.168.100.1 255.255.255.0
  no shutdown
 !
-
 ! ==============================
-! HABILITAR IP ROUTING
+! HABILITAR ROTEAMENTO ENTRE VLANs
 ! ==============================
 ip routing
 !
+! ==============================
 ! ROTA PADRÃO PARA INTERNET
-! Caso o link de internet esteja conectado na interface VLAN40
-! ou na interface física conectada a essa VLAN
-! Onde 192.168.100.57 é o gateway do link de internet
-!
-configure terminal
+! ==============================
 ip route 0.0.0.0 0.0.0.0 192.168.100.57
-end
-write memory
-! copy running-config startup-config
-! ==============================\
+!
+! ==============================
 ! CONFIGURAÇÃO DHCP
 ! ==============================
-! Reservar alguns endereços (não serão distribuídos)
 ip dhcp excluded-address 192.168.100.1
+ip dhcp excluded-address 10.11.10.1
 ip dhcp excluded-address 10.11.11.1
 ip dhcp excluded-address 10.11.12.1
-ip dhcp excluded-address 10.11.10.1
 !
-! Pool VLAN10
 ip dhcp pool VLAN10
  network 10.11.10.0 255.255.255.0
  default-router 10.11.10.1
  dns-server 8.8.8.8
-
-! Pool VLAN20
+!
 ip dhcp pool VLAN20
  network 10.11.11.0 255.255.255.0
  default-router 10.11.11.1
  dns-server 8.8.8.8
-
- !
-! Pool VLAN30
+!
 ip dhcp pool VLAN30
  network 10.11.12.0 255.255.255.0
  default-router 10.11.12.1
  dns-server 8.8.8.8
- !
-! Pool VLAN40
+!
 ip dhcp pool VLAN40
  network 192.168.100.0 255.255.255.0
  default-router 192.168.100.1
  dns-server 8.8.8.8
 !
-
-
-! ==============================
-! FIM DA CONFIGURAÇÃO
-! ==============================
 end
 write memory
 
