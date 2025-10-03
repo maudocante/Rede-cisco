@@ -61,6 +61,15 @@ interface Vlan40
  no shutdown
 !
 ! ==============================
+! HABILITAR MODP TRUNK
+! ==============================
+! Habilitar modo trunk na porta que liga um ao outro switch 
+interface fa0/24
+ switchport trunk encapsulation dot1q   ! (alguns switches não precisam deste comando)
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+!
+! ==============================
 ! HABILITAR ROTEAMENTO ENTRE VLANs
 ! ==============================
 ip routing
