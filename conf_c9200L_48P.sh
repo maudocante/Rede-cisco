@@ -69,6 +69,7 @@ interface fa0/24
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30,40
 !
+! Switch port deve ser definida no 2 switchs
 ! ==============================
 ! HABILITAR ROTEAMENTO ENTRE VLANs
 ! ==============================
