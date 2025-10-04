@@ -57,8 +57,16 @@ Portas de cliente	—	Gi1/0/1–20
 
 Deseja que eu adicione a VLAN 30 com acesso à Internet (NAT) via Switch A, para que os clientes das VLANs também saiam à Internet?
 
+# EXPORTAR CONFIGURAÇÃO SWITCH
 
+Notas Importantes
+Substitua running-config por startup-config se desejar exportar a configuração salva.
 
+Para ambientes corporativos, recomenda-se usar SCP ou SFTP (se suportado) por segurança.
+
+Verifique o espaço em disco no servidor de destino antes de exportar.
+
+Se precisar de ajuda com detalhes específicos (como configurar um servidor SCP/TFTP), avise!
 
 
 
