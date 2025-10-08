@@ -1,0 +1,112 @@
+! ==========================================================
+! CONFIGURAÇÃO UNIFICADA – TRUNK + DHCP RELAY
+! Switch Core (C9200L-24) ↔ Switch Cliente (C9200L-48)
+! Mantém VLAN 1 ativa e tráfego de internet sem interrupção.
+! ==========================================================
+
+! ------------------------------
+! *** SWITCH CLIENTE – C9200L-48 ***
+! ------------------------------
+!
+configure terminal
+hostname SWITCH-CLIENTE
+!
+! === Porta ligada ao Core ===
+interface GigabitEthernet1/0/1
+ description Link_to_Core
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 1
+ switchport trunk allowed vlan 1
+ spanning-tree portfast trunk
+!
+! === Interface VLAN 1 (para gestão ou DHCP Relay) ===
+interface vlan 1
+ ip address dhcp
+ no shutdown
+!
+! (Se ainda não houver servidor DHCP no Core, mantenha IP estático temporário:)
+! ip address 10.11.10.3 255.255.255.0
+! ip default-gateway 10.11.10.2
+!
+end
+write memory
+!
+! ------------------------------
+! *** SWITCH CORE – C9200L-24 ***
+! ------------------------------
+!
+configure terminal
+hostname SWITCH-CORE
+!
+! === Porta ligada ao Cliente ===
+interface GigabitEthernet1/0/24
+ description Link_to_Cliente
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 1
+ switchport trunk allowed vlan 1
+ spanning-tree portfast trunk
+!
+! === Interface VLAN 1 ===
+interface vlan 1
+ ip address 10.11.10.2 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.11.10.1
+!
+! === Servidor DHCP para VLAN 1 ===
+ip dhcp excluded-address 10.11.10.1 10.11.10.10
+ip dhcp pool VLAN1
+ network 10.11.10.0 255.255.255.0
+ default-router 10.11.10.2
+ dns-server 8.8.8.8
+ domain-name localnet
+!
+end
+write memory
+!
+! ==========================================================
+! TESTES DE VERIFICAÇÃO
+! ==========================================================
+! 1. Em ambos os switches:
+!    show interfaces trunk
+!    → deve mostrar Gi1/0/1 (Cliente) e Gi1/0/24 (Core) em trunking, native vlan 1
+!
+! 2. Testar ping entre:
+!    - Core e Cliente
+!    - Cliente e Internet
+!
+! 3. Quando DHCP ativo no Core:
+!    - No Cliente, “show ip interface brief” → IP obtido dinamicamente.
+!
+! 4. (Opcional) No Cliente, verifique DHCP Relay funcionando:
+!    debug ip dhcp server packets
+!
+! =======================================💡 Como aplicar
+
+Copie o arquivo e divida as seções entre cada switch:
+
+Tudo acima de *** SWITCH CLIENTE *** → cole no cliente primeiro.
+
+Depois, aplique o trecho *** SWITCH CORE ***.
+
+Sempre aplique o lado cliente primeiro, porque o acesso remoto vem pelo core.
+
+Teste ping e show interfaces trunk antes de configurar o DHCP.===================
+! FIM DO ARQUIVO
+! ==========================================================
+!
+!
+!	
+! 💡 Como aplicar
+!
+! Copie o arquivo e divida as seções entre cada switch:
+!
+! Tudo acima de *** SWITCH CLIENTE *** → cole no cliente primeiro.
+!
+! Depois, aplique o trecho *** SWITCH CORE ***.
+!
+! Sempre aplique o lado cliente primeiro, porque o acesso remoto vem pelo core.
+!
+! Teste ping e show interfaces trunk antes de configurar o DHCP.
